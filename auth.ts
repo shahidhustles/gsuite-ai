@@ -2,8 +2,20 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma";
 import GoogleProvider from "next-auth/providers/google";
+
 import { getGoogleAccountByEmail } from "./features/auth/user-auth-session-model.server";
-import { isAccessTokenExpired, refreshAndUpdateAccessToken } from "./features/auth/auth-helper.server";
+import {
+  isAccessTokenExpired,
+  refreshAndUpdateAccessToken,
+  setSessionAccessToken,
+} from "./features/auth/auth-helper.server";
+
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    refreshToken?: string;
+  }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -59,6 +71,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const accessToken = isAccessTokenExpired(account.expires_at)
         ? await refreshAndUpdateAccessToken(account)
         : account.access_token;
+
+      // inject fresh access token into the object
+      return setSessionAccessToken(session, accessToken);
     },
   },
+
+  secret : process.env.AUTH_SECRET,
+  pages : {
+    signIn : "/auth"
+  },
+  debug : process.env.NODE_ENV === "development"
 });

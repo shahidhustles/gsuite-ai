@@ -1,6 +1,8 @@
 import { google } from "googleapis";
-import { Account } from "next-auth";
+import {  Session } from "next-auth";
 import { updateAccessToken } from "./user-auth-session-model.server";
+import { Account } from '@/generated/prisma';
+
 
 export const isAccessTokenExpired = (
   expiresAt: number | null | undefined
@@ -50,3 +52,11 @@ export const refreshAccessToken = async (account: Account) => {
     };
   }
 };
+
+export const setSessionAccessToken = (
+        session: Session,
+        accessToken: string | null | undefined
+      ): Session => {
+        session.accessToken = accessToken ?? undefined;
+        return session;
+      };
