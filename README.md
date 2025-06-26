@@ -1,4 +1,4 @@
-# GSuite AI Boilerplate
+# Prisma + Supabase Postgres + Auth.js Boilerplate
 
 A complete Next.js boilerplate with Google OAuth authentication, PostgreSQL database, and Google APIs integration. Perfect for building AI-powered applications that need Gmail, Calendar, and other Google services access.
 
